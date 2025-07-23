@@ -1,38 +1,17 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Captura de Dados</title>
-  </head>
-  <body>
-    <h1>Capturando informações...</h1>
-    <pre id="info"></pre>
-
-    <script>
-      async function enviarDados() {
-        const dados = {
-          userAgent: navigator.userAgent,
-          idioma: navigator.language,
-          plataforma: navigator.platform,
-          resolucao: `${screen.width}x${screen.height}`,
-          fuso: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          timestamp: new Date().toISOString(),
-        };
-
-        document.getElementById("info").textContent = JSON.stringify(dados, null, 2);
-
-        try {
-          await fetch("/api/captura", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(dados),
-          });
-        } catch (err) {
-          console.error("Erro ao enviar dados:", err);
-        }
-      }
-
-      enviarDados();
-    </script>
-  </body>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Descubra sua Localização</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Descubra sua Localização</h1>
+        <p id="location">Aguarde enquanto obtemos sua localização...</p>
+    </div>
+    <!-- Referência ao script dentro da pasta api -->
+    <script src="api/captura.js"></script>
+</body>
 </html>
