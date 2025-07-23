@@ -1,3 +1,12 @@
-Json
-
-[]
+[
+    {
+        "city": "São Paulo",
+        "latitude": -23.55052,
+        "longitude": -46.633308
+    },
+    {
+        "city": "Rio de Janeiro",
+        "latitude": -22.906847,
+        "longitude": -43.172896
+    }
+]
