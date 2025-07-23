@@ -1,27 +1,41 @@
-import { writeFile, readFile } from "fs/promises";
-import path from "path";
+// Função chamada assim que a página for carregada
+window.onload = function() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition, showError);
+    } else {
+        document.getElementById("location").innerHTML = "Geolocalização não é suportada pelo seu navegador.";
+    }
+};
 
-export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ erro: "Método não permitido" });
-  }
+// Exibe a localização quando recebida
+function showPosition(position) {
+    const lat = position.coords.latitude;
+    const lon = position.coords.longitude;
+    document.getElementById("location").innerHTML = `Latitude: ${lat} <br> Longitude: ${lon}`;
 
-  const novoDado = req.body;
-  const filePath = path.join(process.cwd(), "data", "locations.json");
+    // Aqui você pode fazer algo com o arquivo locations.json se necessário
+    fetch('data/locations.json')
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);  // Exibe o conteúdo de locations.json no console
+        })
+        .catch(err => console.error('Erro ao carregar locations.json:', err));
+}
 
-  try {
-    let dadosExistentes = [];
-    try {
-      const fileContent = await readFile(filePath, "utf-8");
-      dadosExistentes = JSON.parse(fileContent);
-    } catch {}
-
-    dadosExistentes.push(novoDado);
-
-    await writeFile(filePath, JSON.stringify(dadosExistentes, null, 2));
-    res.status(200).json({ sucesso: true });
-  } catch (err) {
-    console.error("Erro ao salvar:", err);
-    res.status(500).json({ erro: "Erro ao salvar os dados" });
-  }
+// Exibe erro se não for possível obter a localização
+function showError(error) {
+    switch(error.code) {
+        case error.PERMISSION_DENIED:
+            document.getElementById("location").innerHTML = "Você negou a permissão para acessar sua localização.";
+            break;
+        case error.POSITION_UNAVAILABLE:
+            document.getElementById("location").innerHTML = "Localização indisponível.";
+            break;
+        case error.TIMEOUT:
+            document.getElementById("location").innerHTML = "Tempo de requisição expirado.";
+            break;
+        case error.UNKNOWN_ERROR:
+            document.getElementById("location").innerHTML = "Erro desconhecido.";
+            break;
+    }
 }
